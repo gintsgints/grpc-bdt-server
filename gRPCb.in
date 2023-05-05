@@ -1,0 +1,9 @@
+proto < ./proto/bdt.proto
+@host=localhost:50051
+
+###
+
+GRPC /bdt.Bdt/GetData
+{
+    "table": "TT_CONFIG"
+}
