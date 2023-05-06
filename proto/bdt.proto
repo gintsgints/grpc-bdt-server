@@ -23,9 +23,9 @@ message Filter {
 }
 
 message BdtResponse {
-    repeated Row rows = 1;
+    repeated BdtRow rows = 1;
 }
 
-message Row {
-    repeated string values = 1;
+message BdtRow {
+    map<string, string> values = 1;
 }
