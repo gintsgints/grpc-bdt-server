@@ -18,8 +18,9 @@ message Column {
 }
 
 message Filter {
-    string name = 1;
-    string value = 2;
+    string column = 1;
+    string operator = 2;
+    string value = 3;
 }
 
 message BdtResponse {

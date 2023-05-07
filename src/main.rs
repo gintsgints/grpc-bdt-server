@@ -32,12 +32,20 @@ impl Bdt for BdtService {
 
         let req = request.into_inner();
 
-        let select = sql_query_builder::Select::new()
-            .select(req.columns.iter().map(|x| x.name.to_string()).collect::<Vec<_>>().join(",").as_str())
-            .from(req.table.as_str())
-            .as_string();
+        let query_str = {
+            let select_str = req.columns.iter().map(|x| x.name.to_string()).collect::<Vec<_>>().join(",");
+            let mut select = sql_query_builder::Select::new()
+                .select(&select_str)
+                .from(req.table.as_str());
 
-        let recs: Vec<SqliteRow> = query(&select).fetch_all(&self.pool).await.unwrap();
+            for (i, filter) in req.filters.iter().enumerate() {
+                let constraint = format!("{} {} ${}", filter.column.to_string().clone(), filter.operator.to_string().clone(), i + 1);
+                select = select.where_clause(&constraint).clone();
+            };
+            select.as_string()
+        };
+
+        let recs: Vec<SqliteRow> = query(&query_str).fetch_all(&self.pool).await.unwrap();
 
         let mut rows:Vec<BdtRow> = vec![];
 
