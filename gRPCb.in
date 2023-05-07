@@ -5,5 +5,13 @@ proto < ./proto/bdt.proto
 
 GRPC /bdt.Bdt/GetData
 {
-    "table": "TT_CONFIG"
+    "table": "TT_CONFIG",
+    "columns": [
+        {
+            "name": "config_type"
+        },
+        {
+            "name": "config_value"
+        }
+    ]
 }

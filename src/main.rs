@@ -1,4 +1,5 @@
-use sqlx::{Pool, Sqlite, SqlitePool, Row, Column};
+use sqlx::sqlite::SqliteRow;
+use sqlx::{Pool, Sqlite, SqlitePool, Row, Column, query};
 use std::collections::HashMap;
 use std::env;
 use tonic::{transport::Server, Request, Response, Status};
@@ -31,12 +32,12 @@ impl Bdt for BdtService {
 
         let req = request.into_inner();
 
-        let recs = sqlx::query(r#"
-            SELECT config_type config_type, config_value config_value
-            FROM TT_CONFIG
-        "#)
-        .fetch_all(&self.pool)
-        .await.unwrap();
+        let select = sql_query_builder::Select::new()
+            .select(req.columns.iter().map(|x| x.name.to_string()).collect::<Vec<_>>().join(",").as_str())
+            .from(req.table.as_str())
+            .as_string();
+
+        let recs: Vec<SqliteRow> = query(&select).fetch_all(&self.pool).await.unwrap();
 
         let mut rows:Vec<BdtRow> = vec![];
 

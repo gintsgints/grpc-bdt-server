@@ -8,6 +8,7 @@ prost = "0.11.9"
 tokio = { version = "1.28.0", features = ["macros", "rt-multi-thread"] }
 tonic = "0.9.2"
 sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "sqlite"] }
+sql_query_builder = "1.0.2"
 
 [build-dependencies]
 tonic-build = "0.9.2"
