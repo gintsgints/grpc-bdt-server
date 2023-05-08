@@ -34,14 +34,20 @@ impl Bdt for BdtService {
 
         let query_str = {
             let select_str = req.columns.iter().map(|x| x.name.to_string()).collect::<Vec<_>>().join(",");
+            let mut constraints: Vec<String> = vec![];
+
+            for (i, filter) in req.filters.iter().enumerate() {
+                let constraint = format!("{} {} ${}", filter.column, filter.operator, i + 1);
+                constraints.push(constraint);
+            };
+
             let mut select = sql_query_builder::Select::new()
                 .select(&select_str)
                 .from(req.table.as_str());
 
-            for (i, filter) in req.filters.iter().enumerate() {
-                let constraint = format!("{} {} ${}", filter.column.to_string().clone(), filter.operator.to_string().clone(), i + 1);
-                select = select.where_clause(&constraint).clone();
-            };
+            for constraint in constraints {
+                select = select.where_clause(&constraint);
+            }
             select.as_string()
         };
 
