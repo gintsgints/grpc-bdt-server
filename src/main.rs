@@ -37,7 +37,7 @@ impl Bdt for BdtService {
             let mut constraints: Vec<String> = vec![];
 
             for (i, filter) in req.filters.iter().enumerate() {
-                let constraint = format!("{} {} ${}", filter.column, filter.operator, i + 1);
+                let constraint = format!("{} {} ?{}", filter.column, filter.operator, i + 1);
                 constraints.push(constraint);
             };
 
@@ -45,13 +45,20 @@ impl Bdt for BdtService {
                 .select(&select_str)
                 .from(req.table.as_str());
 
-            for constraint in constraints {
+            for constraint in &constraints {
                 select = select.where_clause(&constraint);
             }
             select.as_string()
         };
 
-        let recs: Vec<SqliteRow> = query(&query_str).fetch_all(&self.pool).await.unwrap();
+        // let args: Vec<_> = req.filters.iter().map(|p| &p.value).collect();
+
+        let mut my_query = query(&query_str);
+        for parameter in req.filters {
+            my_query = my_query.bind(parameter.value);
+        }
+
+        let recs: Vec<SqliteRow> = my_query.fetch_all(&self.pool).await.unwrap();
 
         let mut rows:Vec<BdtRow> = vec![];
 

@@ -1,16 +1,12 @@
 syntax = "proto3";
 package bdt;
 
-service Bdt {
-    rpc GetData (BdtRequest) returns (BdtResponse);
+message BdtResponse {
+    repeated BdtRow rows = 1;
 }
 
-message BdtRequest {
-    string table = 1;
-    repeated Column columns = 2;
-    repeated Filter filters = 3;
-    int32 page_number = 4;
-    int32 results_per_page = 5;
+message BdtRow {
+    map<string, string> values = 1;
 }
 
 message Column {
@@ -23,10 +19,14 @@ message Filter {
     string value = 3;
 }
 
-message BdtResponse {
-    repeated BdtRow rows = 1;
+message BdtRequest {
+    string table = 1;
+    repeated Column columns = 2;
+    repeated Filter filters = 3;
+    int32 page_number = 4;
+    int32 results_per_page = 5;
 }
 
-message BdtRow {
-    map<string, string> values = 1;
+service Bdt {
+    rpc GetData (BdtRequest) returns (BdtResponse);
 }
