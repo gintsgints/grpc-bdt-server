@@ -23,8 +23,6 @@ message BdtRequest {
     string table = 1;
     repeated Column columns = 2;
     repeated Filter filters = 3;
-    int32 page_number = 4;
-    int32 results_per_page = 5;
 }
 
 service Bdt {
